@@ -96,12 +96,14 @@ app.get('/success', (req,res)=>{
        }
     }]
   };
+
   paypal.payment.execute(paymentId, execute_payment_json, function(err,payment){
     if(err){
       console.log(error.response);
       throw error;
     }else{
       console.log(payment);
+
     }
   });
   res.redirect('http://localhost:3000');
@@ -110,7 +112,72 @@ app.get('/success', (req,res)=>{
 app.get('/get_total_amount', async (req,res)=>{
   var result = await get_total_amount();
   res.send(result);
-})
+});
+
+app.get('/pick_winner', async (req,res)=>{
+  var result = await get_total_amount();
+  var total_amount = result[0].total_amount;
+  req.session.paypal_amount = total_amount;
+
+/* Placeholder for picking the pick_winner
+ 1) We need to write a query to get a list of participants
+ 2) We need to pick a winner */
+
+/* Create paypal payment */
+ var create_payment_json = {
+     "intent": "sale",
+     "payer": {
+         "payment_method": "paypal"
+     },
+     "redirect_urls": {
+         "return_url": "http://localhost:3000/success",
+         "cancel_url": "http://localhost:3000/cancel"
+     },
+     "transactions": [{
+         "item_list": {
+             "items": [{
+                 "name": "Lottery",
+                 "sku": "Funding",
+                 "price": areq.session.paypal_amount,
+                 "currency": "USD",
+                 "quantity": 1
+             }]
+         },
+         "amount": {
+             "currency": "USD",
+             "total": req.session.paypal_amount
+         },
+         'payee' : {
+           'email' : winner_email
+         },
+         "description" : "Lottery Winnings"
+     }]
+ };
+
+ paypal.payment.create(create_payment_json, function (error, payment) {
+     if (error) {
+         throw error;
+     } else {
+         console.log("Create Payment Response");
+         console.log(payment);
+         for (var i = 0; i< payment.links.length; i++){
+           if (payment.links[i].rel =='approval_url'){
+             return res.send(payment.links[i].href);
+           }
+         }
+     }
+ });
+
+});
+
+
+
+
+
+
+
+
+
 
 app.listen(3000,()=>{
   console.log('server is running on port 3000');
