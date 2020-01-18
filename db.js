@@ -8,8 +8,8 @@ var db_config = {
 
 var connection;
 
-function handDisconnect(){
-  connection = msql.createConnection(db_config);
+function handleDisconnect(){
+  connection = mysql.createConnection(db_config);
   connection.connect(function(err){
     if(err){
       console.log('error when connecting to db :', err);
