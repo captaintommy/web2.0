@@ -16,7 +16,7 @@ app.post('/post_info', async (req,res)=>{
   if(amount <= 1){
     return_info = {};
     return_info.error = true;
-    return_info.message = "The ammount should be grater than 1";
+    return_info.message = "The amount should be grater than 1";
     return res.send(return_info);
   }
   var result = await save_user_information({"amount" : amount, "email" : email});
