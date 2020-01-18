@@ -13,12 +13,17 @@ app.post('/', async (req,res)=>{
   if(amount <= 1){
     return_info = {};
     return_info.error = true;
-    return_info.message = "THe ammount should be grated than 1";
+    return_info.message = "The ammount should be grater than 1";
     return res.send(return_info);
   }
   var result = await save_user_information({"amount" : amount, "email" : email});
   res.send(result);
 });
+
+app.get('/get_total_amount', async (req,res)=>{
+  var result = await get_total_amount();
+  res.send(result);
+})
 
 app.listen(3000,()=>{
   console.log('server is running on port 3000');
